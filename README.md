@@ -54,9 +54,6 @@ ollama pull gemma3:4b
 
 1. **Run Flask server | اجرای سرور Flask**
 
-```bash
-python app.py
-```
 
 2. **Open frontend | باز کردن رابط کاربری**
 
