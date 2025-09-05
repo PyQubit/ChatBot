@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+ 
+    <meta name="color-scheme" content="light dark">
+    <meta name="viewport" content="viewport-fit=cover,width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+  
+    <title>Chat Bot</title>
+    <link rel="stylesheet" href="style.css?v=6">
+</head>
+<body>
+    <header class="header">
+        <div style="font-size: 12px; font-weight:lighter; color:#fff;">
+            <h2>PyQubit Ai ❤️</h2>
+        </div> 
+        <div style="width: 80px; height: 80px; background-color: #fff; padding: 6px; border-radius: 100px;">
+            <img src="1.jpg" alt="" style="width: 80px; height: 80px; border-radius: 999px;height: 100%; width: 100%;">
+        </div>
+    </header>
+
+    <div class="chat-container-center">
+        <div class="chat-box">
+            <div class="chat-messages" id="chat-messages" style="direction: rtl;">
+            </div>
+            <div id="typing-status" class="typing-status" style="display: none;">
+                <span>Typing...</span>
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="display: flex; justify-content: center;">
+        <div class="input-request">
+            <div class="chat-input-container">
+                <input type="text" id="user-input" placeholder="Type your message...">
+            </div>
+            <div>
+                <button onclick="sendMessage()">
+                    <div class="svg-wrapper-1">
+                        <div class="svg-wrapper">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              width="24"
+                              height="24"
+                            >
+                              <path fill="none" d="M0 0h24v24H0z"></path>
+                              <path
+                                fill="currentColor"
+                                d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
+                              ></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span>Send</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script> 
+
+    <script>
+    var mobile='';
+
+    window.onload = function() {
+        let a = getCookie('amobile');
+        let b;
+		
+        if (a) {
+            b = a;
+            console.log(`Cookie a value: ${a}`);
+        } else {
+            a = prompt("Please enter your mobile number:");
+            setCookie('amobile', a, 365);  
+        }
+        mobile= a; 
+    };
+        
+    function getCookie(name) {
+        const cookies = document.cookie.split('; ');
+        for (let cookie of cookies) {
+            const [key, value] = cookie.split('=');
+            if (key === name) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/`;
+    }
+
+    function sendMessage() {
+        if (mobile == null || mobile.length < 5) {
+            const userInput = prompt("Please enter your mobile number:");
+            mobile = userInput;
+            sendMessage();
+            return;
+        }
+
+        const input = document.getElementById('user-input');
+        const message = input.value.trim();
+
+        if (message) {
+            const userMessage = document.createElement('div');
+            userMessage.classList.add('message', 'user-message');
+            userMessage.textContent = message;
+            document.getElementById('chat-messages').appendChild(userMessage);
+
+            const typingIndicator = document.createElement('div');
+            typingIndicator.classList.add('message', 'bot-message');
+            typingIndicator.innerHTML = `
+                <div class="spinner" style="display: inline-block; vertical-align: middle;"></div>
+                <span>Typing...</span>
+            `;
+            document.getElementById('chat-messages').appendChild(typingIndicator);
+
+            document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+
+            $.ajax('http://127.0.0.1:5000', {
+                type: 'GET',
+                data: { chat1: message, mobile: mobile },
+                success: function (data) {
+                    typingIndicator.innerHTML = data;
+                    document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+                },
+                error: function (jqXhr, textStatus, errorMessage) {
+                    console.log(errorMessage);
+                    typingIndicator.innerHTML = 'Error receiving response. Please try again.';
+                }
+            });
+
+            input.value = '';
+        }
+    }
+
+    document.getElementById('user-input').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); 
+            sendMessage(); 
+        }
+    });
+    </script>
+</body>
+</html>
