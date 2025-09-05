@@ -112,4 +112,4 @@ Hello, how are you?
 Hello! I'm PyQubit AI. How can I assist you today? ✅
 ```
 
-© 2025 **Mohammad Mahdi Omidvar** 2025*
+© 2025 **Mohammad Mahdi Omidvar**
